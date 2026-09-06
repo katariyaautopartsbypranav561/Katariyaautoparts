@@ -1,0 +1,1 @@
+const { PrismaClient } = require(./server/node_modules/@prisma/client); const prisma = new PrismaClient(); async function main() { console.log(await prisma.slide.findMany()); } main().catch(console.error).finally(()=>prisma.$disconnect());

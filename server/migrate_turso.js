@@ -1,0 +1,1 @@
+const { createClient } = require('@libsql/client'); require('dotenv').config(); const client = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN }); client.execute('ALTER TABLE Product ADD COLUMN variants TEXT;').then(() => console.log('Done')).catch(console.error); 

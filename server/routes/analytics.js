@@ -1,0 +1,377 @@
+const express = require('express');
+const router = express.Router();
+const prisma = require('../db');
+const UAParser = require('ua-parser-js');
+const { adminMessaging } = require('../firebaseAdmin');
+
+// POST /api/analytics/track
+// Track a page view or an interaction
+router.post('/track', async (req, res) => {
+  try {
+    const { type, visitorId, page, action, details, fcmToken } = req.body;
+    
+    // Basic IP and UserAgent capturing
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'] || '';
+
+    // Parse UA
+    const parser = new UAParser(userAgent);
+    const result = parser.getResult();
+    
+    const browser = result.browser.name || 'Unknown Browser';
+    const os = result.os.name || 'Unknown OS';
+    let device = result.device.type ? result.device.type : 'Desktop';
+    if (result.device.vendor) device = `${result.device.vendor} ${result.device.model || device}`;
+
+    // Upsert visitor if we have visitorId
+    if (visitorId && visitorId !== 'anonymous') {
+      await prisma.visitor.upsert({
+        where: { visitorId },
+        update: {
+          ip: ip?.toString() || '',
+          browser,
+          os,
+          device,
+          ...(fcmToken ? { fcmToken } : {})
+          // do NOT overwrite name and phone if already present
+        },
+        create: {
+          visitorId,
+          ip: ip?.toString() || '',
+          browser,
+          os,
+          device,
+          ...(fcmToken ? { fcmToken } : {})
+        }
+      }).catch(e => console.error("Error upserting visitor:", e.message));
+    }
+
+    if (type === 'pageview') {
+      await prisma.siteVisit.create({
+        data: {
+          visitorId: visitorId || 'anonymous',
+          page: page || 'Unknown'
+        }
+      });
+    } else if (type === 'interaction') {
+      await prisma.activityLog.create({
+        data: {
+          action: action || 'Unknown Action',
+          details: details || '',
+          ip: ip?.toString() || '',
+          userAgent: userAgent
+        }
+      });
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Failed to track analytics:", error);
+    res.status(500).json({ error: "Failed to track analytics" });
+  }
+});
+
+// GET /api/analytics/stats
+router.get('/stats', async (req, res) => {
+  try {
+    const { range } = req.query; // '7d', '1m', or 'custom'
+    const now = new Date();
+    let startDate = new Date();
+
+    if (range === '1m') {
+      startDate.setDate(now.getDate() - 30);
+    } else if (range === 'custom') {
+      const { start, end } = req.query;
+      if (start && end) {
+        startDate = new Date(start);
+        now.setTime(new Date(end).getTime());
+      } else {
+        startDate.setDate(now.getDate() - 7);
+      }
+    } else {
+      startDate.setDate(now.getDate() - 7);
+    }
+
+    const visits = await prisma.siteVisit.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: now
+        }
+      }
+    });
+
+    const interactions = await prisma.activityLog.findMany({
+      where: {
+        timestamp: {
+          gte: startDate,
+          lte: now
+        }
+      }
+    });
+    
+    const aggregated = {};
+    for (let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)) {
+      let dateKey;
+      if (range === '7d' || !range) {
+        dateKey = d.toLocaleDateString('en-US', { weekday: 'short' }); 
+      } else {
+        dateKey = d.toISOString().split('T')[0]; 
+      }
+      
+      const exactDate = d.toISOString().split('T')[0];
+      aggregated[exactDate] = { 
+        name: dateKey, 
+        exactDate,
+        visits: 0, 
+        interactions: 0 
+      };
+    }
+
+    visits.forEach(v => {
+      const d = v.createdAt.toISOString().split('T')[0];
+      if (aggregated[d]) {
+        aggregated[d].visits += 1;
+      }
+    });
+
+    interactions.forEach(i => {
+      const d = i.timestamp.toISOString().split('T')[0];
+      if (aggregated[d]) {
+        aggregated[d].interactions += 1;
+      }
+    });
+
+    const chartData = Object.values(aggregated);
+
+    res.json(chartData);
+  } catch (error) {
+    console.error("Failed to fetch analytics stats:", error);
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+// GET /api/analytics/live
+router.get('/live', async (req, res) => {
+  try {
+    const recentVisits = await prisma.siteVisit.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 20
+    });
+
+    const recentLogs = await prisma.activityLog.findMany({
+      orderBy: { timestamp: 'desc' },
+      take: 20
+    });
+
+    // Fetch visitor details for these visits
+    const visitorIds = [...new Set(recentVisits.map(v => v.visitorId))];
+    let visitorMap = {};
+    if (visitorIds.length > 0) {
+      const visitors = await prisma.visitor.findMany({
+        where: { visitorId: { in: visitorIds } }
+      });
+      visitors.forEach(v => visitorMap[v.visitorId] = v);
+    }
+
+    const combined = [
+      ...recentVisits.map(v => {
+        let name = "Anonymous";
+        if (visitorMap[v.visitorId]) {
+          const vis = visitorMap[v.visitorId];
+          if (vis.name) {
+            name = vis.name;
+          } else {
+            name = `Anonymous ${vis.visitorId.replace('vid_', '').substring(0,4)}`;
+          }
+        }
+        
+        return {
+          id: `v_${v.id}`,
+          type: 'visit',
+          action: 'Page View',
+          details: `Visited ${v.page}`,
+          timestamp: v.createdAt,
+          visitor: visitorMap[v.visitorId] || null,
+          displayName: name
+        };
+      }),
+      ...recentLogs.map(l => {
+        let name = "Anonymous";
+        // Attempt to find the visitor for logs if we eventually add visitorId to ActivityLog
+        // For now, it will be anonymous.
+        return {
+          id: `l_${l.id}`,
+          type: 'interaction',
+          action: l.action,
+          details: l.details,
+          timestamp: l.timestamp,
+          visitor: null,
+          displayName: name
+        };
+      })
+    ];
+
+    combined.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    res.json(combined.slice(0, 50));
+  } catch (error) {
+    console.error("Failed to fetch live analytics:", error);
+    res.status(500).json({ error: "Failed to fetch live analytics" });
+  }
+});
+
+// POST /api/analytics/notify
+router.post('/notify', async (req, res) => {
+  try {
+    const { fcmToken, title, body, url } = req.body;
+    
+    if (!adminMessaging) {
+      return res.status(500).json({ error: "Push notifications are not configured." });
+    }
+
+    const message = {
+      notification: {
+        title: title || 'New Notification',
+        body: body || ''
+      },
+      webpush: {
+        fcmOptions: {
+          link: url || '/'
+        }
+      },
+      token: fcmToken
+    };
+
+    const response = await adminMessaging.send(message);
+    res.json({ success: true, response });
+  } catch (error) {
+    console.error("Error sending message:", error);
+    res.status(500).json({ error: "Failed to send notification" });
+  }
+});
+
+// Retention & Billing Analytics
+router.get('/retention', async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      where: { status: { not: 'CANCELLED' } },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    const customers = {};
+    let totalRevenue = 0;
+    
+    for (const order of orders) {
+      // Group by phone or visitorId
+      const key = order.customerPhone || order.visitorId || order.customerName;
+      if (!customers[key]) {
+        customers[key] = {
+          phone: order.customerPhone,
+          name: order.customerName,
+          visitorId: order.visitorId,
+          orderCount: 0,
+          totalSpent: 0,
+          firstOrderDate: order.createdAt,
+          lastOrderDate: order.createdAt
+        };
+      }
+      customers[key].orderCount += 1;
+      customers[key].totalSpent += order.total;
+      customers[key].lastOrderDate = order.createdAt;
+      totalRevenue += order.total;
+    }
+
+    const customerList = Object.values(customers).sort((a, b) => b.totalSpent - a.totalSpent);
+    
+    const repeatCustomers = customerList.filter(c => c.orderCount > 1);
+    const retentionRate = customerList.length > 0 
+      ? ((repeatCustomers.length / customerList.length) * 100).toFixed(1) 
+      : 0;
+
+    res.json({
+      totalCustomers: customerList.length,
+      repeatCustomers: repeatCustomers.length,
+      retentionRate,
+      totalRevenue,
+      topCustomers: customerList.slice(0, 50)
+    });
+  } catch (error) {
+    console.error('Error fetching retention analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch retention analytics' });
+  }
+});
+
+// Deep Web Traffic Analysis
+router.get('/traffic', async (req, res) => {
+  try {
+    // 1. Get recent visits for pageview counts
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const visits = await prisma.siteVisit.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } }
+    });
+
+    const pageViews = {};
+    visits.forEach(v => {
+      const p = v.page || '/';
+      pageViews[p] = (pageViews[p] || 0) + 1;
+    });
+
+    const topPages = Object.entries(pageViews)
+      .map(([page, views]) => ({ name: page, views }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 10);
+
+    // 2. Get visitors for device/os/browser breakdown
+    const visitors = await prisma.visitor.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } }
+    });
+
+    const devices = { Desktop: 0, Mobile: 0, Tablet: 0, Other: 0 };
+    const browsers = { Chrome: 0, Safari: 0, Firefox: 0, Edge: 0, Other: 0 };
+    const osData = { Windows: 0, macOS: 0, iOS: 0, Android: 0, Other: 0 };
+
+    visitors.forEach(v => {
+      // Device
+      if (v.device?.toLowerCase().includes('mobile')) devices.Mobile++;
+      else if (v.device?.toLowerCase().includes('tablet')) devices.Tablet++;
+      else if (v.device?.toLowerCase().includes('desktop') || !v.device) devices.Desktop++;
+      else devices.Other++;
+
+      // Browser
+      if (v.browser?.includes('Chrome')) browsers.Chrome++;
+      else if (v.browser?.includes('Safari') && !v.browser?.includes('Chrome')) browsers.Safari++;
+      else if (v.browser?.includes('Firefox')) browsers.Firefox++;
+      else if (v.browser?.includes('Edge')) browsers.Edge++;
+      else browsers.Other++;
+
+      // OS
+      if (v.os?.includes('Windows')) osData.Windows++;
+      else if (v.os?.includes('Mac OS') || v.os?.includes('macOS')) osData.macOS++;
+      else if (v.os?.includes('iOS')) osData.iOS++;
+      else if (v.os?.includes('Android')) osData.Android++;
+      else osData.Other++;
+    });
+
+    // Formatting for charts
+    const deviceChart = Object.entries(devices).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
+    const browserChart = Object.entries(browsers).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
+    const osChart = Object.entries(osData).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
+
+    res.json({
+      totalPageViews: visits.length,
+      uniqueVisitors: visitors.length,
+      topPages,
+      devices: deviceChart,
+      browsers: browserChart,
+      os: osChart
+    });
+  } catch (error) {
+    console.error('Error fetching traffic analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch traffic analytics' });
+  }
+});
+
+module.exports = router;
