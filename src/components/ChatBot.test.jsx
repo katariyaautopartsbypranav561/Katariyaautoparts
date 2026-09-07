@@ -24,42 +24,43 @@ describe('ChatBot Component', () => {
 
   test('renders the chatbot toggle button', () => {
     renderWithProviders(<ChatBot />);
-    const toggleButton = screen.getByRole('button');
+    const toggleButton = screen.getByLabelText(/Open chat assistant/i);
     expect(toggleButton).toBeInTheDocument();
   });
 
   test('opens chat window when toggle button is clicked', async () => {
     renderWithProviders(<ChatBot />);
-    const toggleButton = screen.getByRole('button');
+    const toggleButton = screen.getByLabelText(/Open chat assistant/i);
     
     // Initial state: chat is closed
-    expect(screen.queryByText(/Katariya Auto Parts Purity Assistant/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Katariya Auto Parts Assistant/i)).not.toBeInTheDocument();
     
     // Click toggle
     fireEvent.click(toggleButton);
     
     // Wait for animation to finish and chat to open
     await waitFor(() => {
-      expect(screen.getByText(/Katariya Auto Parts Purity Assistant/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Katariya Auto Parts Assistant/i)[0]).toBeInTheDocument();
     });
   });
 
   test('allows user to enter name', async () => {
     renderWithProviders(<ChatBot />);
-    const toggleButton = screen.getByRole('button');
+    const toggleButton = screen.getByLabelText(/Open chat assistant/i);
     fireEvent.click(toggleButton);
     
+    let input;
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/Type your message.../i)).toBeInTheDocument();
-    });
+      input = document.querySelector('input[placeholder="Type your message..."]');
+      expect(input).toBeInTheDocument();
+    }, { timeout: 3000 });
 
-    const input = screen.getByPlaceholderText(/Type your message.../i);
     fireEvent.change(input, { target: { value: 'John' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
     // It should display the user's message
     await waitFor(() => {
-      expect(screen.getByText('John')).toBeInTheDocument();
+      expect(screen.getAllByText(/John/)[0]).toBeInTheDocument();
     });
   });
 });

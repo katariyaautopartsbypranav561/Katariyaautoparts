@@ -67,7 +67,7 @@ describe('HomePage', () => {
   it('renders successfully without crashing', () => {
     renderHomePage();
     // Verify header or brand title exists
-    expect(screen.getAllByText('katariya auto parts')[0]).toBeInTheDocument();
+    expect(screen.getAllByAltText('Katariya Auto Parts')[0]).toBeInTheDocument();
   });
 
   it('renders initial data from DataContext', () => {
@@ -77,7 +77,7 @@ describe('HomePage', () => {
     expect(screen.getByText('Explore Category', { exact: false })).toBeInTheDocument();
     
     // Check product titles exist
-    expect(screen.getByText('Kashmiri Mongra Saffron 1g')).toBeInTheDocument();
-    expect(screen.getByText('Jumbo California Almonds 500g')).toBeInTheDocument();
+    expect(screen.getAllByText('Kashmiri Mongra Saffron 1g')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Jumbo California Almonds 500g')[0]).toBeInTheDocument();
   });
 });

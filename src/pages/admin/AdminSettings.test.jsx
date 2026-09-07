@@ -1,10 +1,13 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { expect, test, vi } from 'vitest';
 import AdminSettings from './AdminSettings';
 import { DataContext } from '../../context/DataContext';
 import { CartProvider } from '../../context/CartContext';
+import axios from 'axios';
+
+vi.mock('axios');
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -42,6 +45,7 @@ test('renders settings form correctly', () => {
 });
 
 test('changes tabs and updates form data', async () => {
+  axios.put.mockResolvedValue({ data: { success: true } });
   renderAdminSettings();
   
   // Update general info
@@ -58,13 +62,12 @@ test('changes tabs and updates form data', async () => {
   fireEvent.click(generalTab);
   
   const saveBtn = screen.getByRole('button', { name: /Save Changes/i });
-  await act(async () => {
-    fireEvent.click(saveBtn);
-    await new Promise(r => setTimeout(r, 50));
-  });
+  fireEvent.click(saveBtn);
   
-  expect(mockSetFrontendSettings).toHaveBeenCalledWith(expect.objectContaining({
-    storeName: 'Katariya Auto Parts Pure',
-    tagline: 'Promise of Purity'
-  }));
+  await waitFor(() => {
+    expect(mockSetFrontendSettings).toHaveBeenCalledWith(expect.objectContaining({
+      storeName: 'Katariya Auto Parts Pure',
+      tagline: 'Promise of Purity'
+    }));
+  });
 });

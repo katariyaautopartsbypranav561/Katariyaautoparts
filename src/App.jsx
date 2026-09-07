@@ -178,7 +178,7 @@ function AppInner() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || '483177651030-kicpl2mquoh7i63oh46p4r8t0u0o7j6b.apps.googleusercontent.com'}>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || '562806764553-3raf5adpfs0fg5ugnetr7haro37bpn1r.apps.googleusercontent.com'}>
         <AuthProvider>
           <DataProvider>
             <CartProvider>

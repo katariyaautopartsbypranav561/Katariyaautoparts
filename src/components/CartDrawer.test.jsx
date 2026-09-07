@@ -6,6 +6,8 @@ import CartDrawer from './CartDrawer';
 import { CartProvider } from '../context/CartContext';
 import { useCart } from '../context/CartContext';
 import { DataContext } from '../context/DataContext';
+import { AuthProvider } from '../context/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Helper component to open cart for testing
 const TestWrapper = () => {
@@ -23,11 +25,15 @@ describe('CartDrawer Component', () => {
   const renderWithProviders = (ui) => {
     return render(
       <MemoryRouter>
-        <DataContext.Provider value={{ frontendSettings: { storeName: 'Katariya Auto Parts' } }}>
-          <CartProvider>
-            {ui}
-          </CartProvider>
-        </DataContext.Provider>
+        <GoogleOAuthProvider clientId="test">
+          <AuthProvider>
+            <DataContext.Provider value={{ frontendSettings: { storeName: 'Katariya Auto Parts' } }}>
+              <CartProvider>
+                {ui}
+              </CartProvider>
+            </DataContext.Provider>
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </MemoryRouter>
     );
   };

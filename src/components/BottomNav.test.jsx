@@ -19,7 +19,7 @@ describe('BottomNav Component', () => {
     );
 
     expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Catalogue')).toBeInTheDocument();
+    expect(screen.getByText('Browse')).toBeInTheDocument();
     expect(screen.getByText('Offers')).toBeInTheDocument();
     expect(screen.getByText('Garage')).toBeInTheDocument();
     expect(screen.getByText('Account')).toBeInTheDocument();

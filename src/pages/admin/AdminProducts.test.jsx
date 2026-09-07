@@ -5,6 +5,9 @@ import { DataContext } from '../../context/DataContext';
 import { CartProvider } from '../../context/CartContext';
 import AdminProducts from './AdminProducts';
 import React, { useState } from 'react';
+import axios from 'axios';
+
+vi.mock('axios');
 
 const initialProducts = [
   { id: 1, name: 'Premium Jumbo California Almonds', brand: 'Katariya Auto Parts', price: 649, mrp: 849, badge: '⭐ Customer Choice', category: 'Dry Fruits', img: '' },
@@ -37,6 +40,10 @@ describe('AdminProducts', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    axios.get.mockResolvedValue({ data: [] });
+    axios.post.mockResolvedValue({ data: {} });
+    axios.put.mockResolvedValue({ data: {} });
+    axios.delete.mockResolvedValue({ data: {} });
     global.confirm = vi.fn(() => true); // Mock window.confirm to return true
   });
 

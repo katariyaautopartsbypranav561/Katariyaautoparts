@@ -39,7 +39,7 @@ describe('Header Component', () => {
 
   it('renders the logo and brand name', () => {
     renderWithProviders(<Header />);
-    expect(screen.getAllByText('katariya auto parts')[0]).toBeInTheDocument();
+    expect(screen.getByAltText('Katariya Auto Parts')).toBeInTheDocument();
   });
 
   it('renders desktop navigation links', () => {
@@ -47,14 +47,14 @@ describe('Header Component', () => {
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Store Catalogue')).toBeInTheDocument();
     expect(screen.getByText('Deals & Offers')).toBeInTheDocument();
-    expect(screen.getByText('Wellness Hub')).toBeInTheDocument();
+    expect(screen.getByText('Contact Us')).toBeInTheDocument();
     expect(screen.getByText('My Account')).toBeInTheDocument();
   });
 
   it('updates search query input', () => {
     renderWithProviders(<Header />);
     const searchInput = screen.getByPlaceholderText(/Search/i);
-    fireEvent.change(searchInput, { target: { value: 'Kashmiri Saffron' } });
-    expect(searchInput.value).toBe('Kashmiri Saffron');
+    fireEvent.change(searchInput, { target: { value: 'Engine Oil' } });
+    expect(searchInput.value).toBe('Engine Oil');
   });
 });
