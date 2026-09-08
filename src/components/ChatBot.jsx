@@ -31,11 +31,11 @@ export default function ChatBot() {
     scrollToBottom();
   }, [messages, isOpen]);
 
-  // Auto-open chatbot assistant after 12 seconds
+  // Auto-open chatbot assistant after 20 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsOpen((prev) => prev || true);
-    }, 12000);
+    }, 20000);
     return () => clearTimeout(timer);
   }, []);
 
