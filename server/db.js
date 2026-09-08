@@ -15,7 +15,22 @@ try {
     const adapter = new PrismaLibSQL(libsql);
     prisma = new PrismaClient({ adapter });
   } else {
-    prisma = new PrismaClient();
+    if (process.env.VERCEL) {
+      const fs = require('fs');
+      const dbPath = path.join(__dirname, 'prisma', 'dev.db');
+      const dest = '/tmp/dev.db';
+      try {
+        if (!fs.existsSync(dest)) {
+          fs.copyFileSync(dbPath, dest);
+        }
+        prisma = new PrismaClient({ datasources: { db: { url: 'file:/tmp/dev.db' } } });
+      } catch (err) {
+        console.error("Vercel SQLite fallback failed:", err);
+        prisma = new PrismaClient();
+      }
+    } else {
+      prisma = new PrismaClient();
+    }
   }
 } catch (error) {
   console.warn("Falling back to standard PrismaClient initialization:", error.message);
