@@ -3,9 +3,9 @@ const router = express.Router();
 const { adminAuth } = require('../firebaseAdmin');
 const prisma = require('../db');
 
-const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
-// Middleware to verify Firebase/Google ID token
+// Middleware to verify Google access token
 const verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -14,26 +14,20 @@ const verifyToken = async (req, res, next) => {
 
   const token = authHeader.split('Bearer ')[1];
   try {
-    if (adminAuth) {
-      const decodedToken = await adminAuth.verifyIdToken(token);
-      req.user = decodedToken;
-      return next();
-    }
+    // Verify the Google access_token by fetching user profile
+    const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     
-    // Fallback: If no Firebase admin is set up, just decode the Google JWT
-    const decoded = jwt.decode(token);
-    if (decoded && decoded.email) {
+    if (response.data && response.data.email) {
       req.user = { 
-        uid: decoded.sub || 'google-' + Date.now(), 
-        email: decoded.email,
-        name: decoded.name
+        uid: response.data.sub, 
+        email: response.data.email,
+        name: response.data.name
       };
       return next();
     }
-    
-    // Total fallback
-    req.user = { uid: 'local-dev-uid', email: 'admin@katariya.com', name: 'Local Admin' };
-    next();
+    throw new Error('Invalid Google Token');
   } catch (error) {
     console.error('Error verifying token:', error.message);
     res.status(401).json({ error: 'Unauthorized' });

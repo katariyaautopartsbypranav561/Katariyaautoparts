@@ -46,13 +46,13 @@ export function AuthProvider({ children }) {
         };
         
         try {
-          await axios.post('http://localhost:3001/api/auth/register', {
+          await axios.post('/api/auth/register', {
             name: googleUser.name,
             email: googleUser.email
           }, {
             headers: {
-              // We'll mock the JWT since we disabled Firebase verification
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(JSON.stringify({sub: googleUser.sub, email: googleUser.email, name: googleUser.name}))}.signature`
+              // Send the real Google access_token to the backend for verification
+              Authorization: `Bearer ${tokenResponse.access_token}`
             }
           });
         } catch(e) {
