@@ -46,10 +46,8 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
   const [started, setStarted] = useState(true);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
-  if (skip) return null;
-
   useEffect(() => {
-    if (!started) return;
+    if (!started || skip) return;
 
     const quoteTimer = setInterval(() => {
       setQuoteIndex(prev => (prev + 1) % quotes.length);
@@ -70,7 +68,9 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
       clearInterval(quoteTimer);
       if (minTimer) clearTimeout(minTimer);
     };
-  }, [started, onFinish]);
+  }, [started, skip, onFinish]);
+
+  if (skip) return null;
 
   const handleTap = () => {
     setIsVisible(false);
