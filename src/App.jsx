@@ -6,6 +6,7 @@ import PageTransition from './components/PageTransition';
 import { CartProvider } from './context/CartContext';
 import { DataProvider } from './context/DataContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import CartDrawer from './components/CartDrawer';
 import Toast from './components/Toast';
 import BottomNav from './components/BottomNav';
