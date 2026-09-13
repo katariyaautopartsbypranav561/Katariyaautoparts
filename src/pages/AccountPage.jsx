@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/ScrollReveal';
 import axios from 'axios';
 import { useEffect } from 'react';
+import MediaDisplay from '../components/MediaDisplay';
 
 const MENU_ITEMS = [
   { icon: Package, label: 'My Orders', sub: 'Active & past orders', color: '#dc2626' },
@@ -216,8 +217,10 @@ export default function AccountPage() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {wishlistItems.map((item) => (
-                        <div key={item.id} className="border border-red-200 rounded-2xl p-3 flex gap-3 items-center">
-                          <img src={item.img} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
+                        <div key={item.cartItemId || item.id} className="flex gap-4 p-4 border border-red-100 rounded-xl bg-white hover:border-red-300 transition-all group">
+                          <div className="relative">
+                            <MediaDisplay src={item.img} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
+                          </div>
                           <div className="flex-1">
                             <p className="font-bold text-neutral-900 text-xs">{item.name}</p>
                             <p className="font-black text-[#171717] text-sm">₹{item.price}</p>

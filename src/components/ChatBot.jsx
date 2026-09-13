@@ -132,7 +132,7 @@ export default function ChatBot() {
               <div className="bg-gradient-to-r from-[#171717] via-[#dc2626] to-[#b91c1c] p-4 flex items-center justify-between shadow-md flex-shrink-0 w-full overflow-hidden">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 min-w-9 min-h-9 rounded-full border-2 border-red-300 bg-white p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                    <img src="/logo.webp" alt="Logo" className="w-full h-full object-contain" />
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-red-50 font-bold leading-tight font-cinzel text-sm truncate">Katariya Auto Parts Assistant</h3>
@@ -202,7 +202,7 @@ export default function ChatBot() {
               <div className="bg-gradient-to-r from-[#171717] via-[#dc2626] to-[#b91c1c] p-4 flex items-center justify-between shadow-md w-full overflow-hidden">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 min-w-9 min-h-9 rounded-full border-2 border-red-300 bg-white p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img src="/logo.png" alt="Katariya Auto Parts Logo" className="w-full h-full object-contain" />
+                    <img src="/logo.webp" alt="Katariya Auto Parts Logo" className="w-full h-full object-contain" />
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-red-50 font-bold leading-tight font-cinzel text-sm truncate">Katariya Auto Parts Assistant</h3>

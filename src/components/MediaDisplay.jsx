@@ -4,34 +4,60 @@ import React from 'react';
  * Universal media component to render an image or a video 
  * based on the file extension or the URL contents.
  */
-function getUnsplashProps(src) {
-  if (!src || !src.includes('images.unsplash.com')) return {};
+function getResponsiveProps(src) {
+  if (!src) return {};
 
-  try {
-    const [baseUrl, query] = src.split('?');
-    const params = new URLSearchParams(query || '');
+  if (src.includes('images.unsplash.com')) {
+    try {
+      const [baseUrl, query] = src.split('?');
+      const params = new URLSearchParams(query || '');
 
-    // auto format (webp/avif) and moderate quality
-    params.set('auto', 'format');
-    params.set('q', '70');
+      // auto format (webp/avif) and moderate quality
+      params.set('auto', 'format');
+      params.set('q', '70');
 
-    // Generate responsive widths
-    const widths = [320, 480, 640, 800, 1024, 1200, 1600];
-    const srcSet = widths
-      .map(w => {
-        params.set('w', w.toString());
-        return `${baseUrl}?${params.toString()} ${w}w`;
-      })
-      .join(', ');
+      // Generate responsive widths
+      const widths = [320, 480, 640, 800, 1024, 1200, 1600];
+      const srcSet = widths
+        .map(w => {
+          params.set('w', w.toString());
+          return `${baseUrl}?${params.toString()} ${w}w`;
+        })
+        .join(', ');
 
-    return {
-      srcSet,
-      sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-    };
-  } catch (e) {
-    console.error("Error building responsive Unsplash srcSet:", e);
-    return {};
+      return {
+        srcSet,
+        sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      };
+    } catch (e) {
+      console.error("Error building responsive Unsplash srcSet:", e);
+      return {};
+    }
   }
+
+  if (src.includes('cdn.shopify.com')) {
+    try {
+      const [baseUrl, query] = src.split('?');
+      const makeShopifyUrl = (w) => {
+        // e.g. .jpg -> _400x.jpg
+        const modifiedBase = baseUrl.replace(/\.(jpg|jpeg|png|webp|gif)$/i, match => `_${w}x${match}`);
+        return modifiedBase + (query ? '?' + query : '');
+      };
+      
+      const widths = [320, 480, 640, 800];
+      const srcSet = widths.map(w => `${makeShopifyUrl(w)} ${w}w`).join(', ');
+      
+      return {
+        srcSet,
+        sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      };
+    } catch(e) {
+      console.error("Error building responsive Shopify srcSet:", e);
+      return {};
+    }
+  }
+
+  return {};
 }
 
 export default function MediaDisplay({ src, alt = "Media", className = "", loading = "lazy", ...props }) {
@@ -54,7 +80,7 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
     );
   }
 
-  const responsiveProps = getUnsplashProps(src);
+  const responsiveProps = getResponsiveProps(src);
 
   return (
     <img

@@ -20,11 +20,23 @@ export default defineConfig({
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
               return 'vendor-react';
             }
+            if (id.includes('recharts')) {
+              return 'vendor-charts';
+            }
+            if (id.includes('html2pdf.js')) {
+              return 'vendor-pdf';
+            }
+            if (id.includes('@react-oauth')) {
+              return 'vendor-auth';
+            }
             if (id.includes('framer-motion')) {
               return 'vendor-framer';
             }
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
+            }
+            if (id.includes('fuse.js')) {
+              return 'vendor-search';
             }
             return 'vendor-libs';
           }

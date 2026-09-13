@@ -66,6 +66,7 @@ export default function YMMFilter({ onFilterChange }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 w-full">
           <select 
+            aria-label="Select Make"
             value={selectedMake} 
             onChange={(e) => {
               setSelectedMake(e.target.value);
@@ -79,6 +80,7 @@ export default function YMMFilter({ onFilterChange }) {
           </select>
 
           <select 
+            aria-label="Select Model"
             value={selectedModel} 
             onChange={(e) => setSelectedModel(e.target.value)}
             disabled={!selectedMake}
@@ -89,6 +91,7 @@ export default function YMMFilter({ onFilterChange }) {
           </select>
 
           <select 
+            aria-label="Select Year"
             value={selectedYear} 
             onChange={(e) => setSelectedYear(e.target.value)}
             disabled={!selectedModel}

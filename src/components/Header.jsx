@@ -88,7 +88,7 @@ export default function Header() {
         <div className="max-w-[1600px] mx-auto px-4 md:px-6 py-2.5 flex items-center flex-wrap md:flex-nowrap gap-y-3 gap-x-4">
 
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="Katariya Auto Parts" className="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform" />
+            <img src="/logo.webp" alt="Katariya Auto Parts" className="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform" />
           </Link>
 
           {/* Desktop Nav Links */}
@@ -169,7 +169,7 @@ export default function Header() {
                 className="flex-1 bg-transparent text-sm text-neutral-800 placeholder-blue-800/40 outline-none min-w-0 font-medium"
               />
               {query && (
-                <button onClick={() => { setQuery(''); setShowSuggestions(false); }} className="text-neutral-400 hover:text-neutral-600">
+                <button aria-label="Clear Search" onClick={() => { setQuery(''); setShowSuggestions(false); }} className="text-neutral-400 hover:text-neutral-600">
                   <span className="text-xs font-bold">✕</span>
                 </button>
               )}
@@ -177,7 +177,7 @@ export default function Header() {
                 <Search size={13} className="text-white" />
                 <span className="text-white text-xs font-bold">Search</span>
               </button>
-              <button onClick={handleSearch} className="md:hidden bg-[#dc2626] rounded-lg p-1.5 flex-shrink-0">
+              <button aria-label="Search" onClick={handleSearch} className="md:hidden bg-[#dc2626] rounded-lg p-1.5 flex-shrink-0">
                 <Search size={14} className="text-white" />
               </button>
 

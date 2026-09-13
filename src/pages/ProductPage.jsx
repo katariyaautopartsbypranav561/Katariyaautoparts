@@ -144,6 +144,7 @@ export default function ProductPage() {
                   {gallery.map((img, idx) => (
                     <button 
                       key={idx}
+                      aria-label={`View image ${idx + 1}`}
                       onClick={() => setActiveImage(idx)}
                       className={`w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${activeImage === idx ? 'border-[#dc2626] shadow-md' : 'border-red-100 opacity-70 hover:opacity-100'}`}
                     >
@@ -159,11 +160,11 @@ export default function ProductPage() {
                       {product.tag}
                     </div>
                   )}
-                  <button className="absolute top-4 right-16 p-2.5 bg-white/90 rounded-full hover:scale-110 text-neutral-600 transition-all z-10 shadow-md"
+                  <button aria-label="Share product" className="absolute top-4 right-16 p-2.5 bg-white/90 rounded-full hover:scale-110 text-neutral-600 transition-all z-10 shadow-md"
                     onClick={handleShare}>
                     <Share2 size={20} />
                   </button>
-                  <button className="absolute top-4 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-neutral-600 transition-all z-10 shadow-md"
+                  <button aria-label={isWishlisted(product.id) ? "Remove from wishlist" : "Add to wishlist"} className="absolute top-4 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-neutral-600 transition-all z-10 shadow-md"
                     onClick={() => toggleWishlist(product)}>
                     <Heart size={20} className={isWishlisted(product.id) ? "fill-red-500 text-red-500" : ""} />
                   </button>
@@ -224,13 +225,12 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Quantity modifier */}
                 <div className="mb-8 flex items-center justify-between border-t border-b border-red-100 py-4">
                   <span className="text-sm font-bold text-neutral-700">Quantity</span>
                   <div className="flex items-center border border-red-200 rounded-xl overflow-hidden bg-red-50/50">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3.5 py-2 text-neutral-600 hover:bg-red-100 transition-colors"><Minus size={14}/></button>
+                    <button aria-label="Decrease quantity" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3.5 py-2 text-neutral-600 hover:bg-red-100 transition-colors"><Minus size={14}/></button>
                     <span className="w-10 text-center font-bold text-neutral-900 text-sm">{quantity}</span>
-                    <button onClick={() => setQuantity(quantity + 1)} className="px-3.5 py-2 text-neutral-600 hover:bg-red-100 transition-colors"><Plus size={14}/></button>
+                    <button aria-label="Increase quantity" onClick={() => setQuantity(quantity + 1)} className="px-3.5 py-2 text-neutral-600 hover:bg-red-100 transition-colors"><Plus size={14}/></button>
                   </div>
                 </div>
 
@@ -335,7 +335,7 @@ export default function ProductPage() {
                   {relatedProducts.map((p, idx) => (
                     <div key={idx} onClick={() => navigate(`/product/${p.id}`)} className="bg-white rounded-2xl p-3 border border-red-200 shadow-sm hover:shadow-xl transition-all cursor-pointer">
                       <div className="relative bg-red-50 rounded-xl overflow-hidden aspect-square mb-2">
-                        <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                        <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover" />
                       </div>
                       <p className="text-xs font-bold text-[#dc2626]">{p.brand}</p>
                       <h4 className="font-bold text-neutral-800 text-xs line-clamp-1 mt-0.5">{p.name}</h4>
@@ -350,7 +350,7 @@ export default function ProductPage() {
         </div>
       </main>
 
-      {/* Sticky Mobile Add To Cart Bar */}
+        {/* Sticky Mobile Add To Cart Bar */}
       <div
         className="md:hidden fixed left-3 right-3 z-[70] bg-white/95 backdrop-blur-md border border-red-300 shadow-2xl flex flex-col gap-2 px-4 py-3 rounded-2xl"
         style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)' }}
@@ -361,9 +361,9 @@ export default function ProductPage() {
             <p className="font-black text-[#171717] text-base leading-tight">₹{computedPrice} {selectedVariant && <span className="text-xs text-red-800 font-bold bg-red-100 px-1.5 py-0.5 rounded ml-1">{selectedVariant}</span>}</p>
           </div>
           <div className="flex items-center border border-red-200 rounded-lg overflow-hidden flex-shrink-0 h-9 bg-red-50">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2.5 text-neutral-600 font-bold"><Minus size={13}/></button>
+            <button aria-label="Decrease quantity" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2.5 text-neutral-600 font-bold"><Minus size={13}/></button>
             <span className="w-6 text-center font-bold text-neutral-900 text-xs">{quantity}</span>
-            <button onClick={() => setQuantity(quantity + 1)} className="px-2.5 text-neutral-600 font-bold"><Plus size={13}/></button>
+            <button aria-label="Increase quantity" onClick={() => setQuantity(quantity + 1)} className="px-2.5 text-neutral-600 font-bold"><Plus size={13}/></button>
           </div>
         </div>
         <div className="flex gap-2">

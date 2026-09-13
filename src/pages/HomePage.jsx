@@ -85,17 +85,17 @@ function HeroCarousel() {
 
 
         {/* Navigation Arrows */}
-        <button onClick={prev} className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-red-500 hover:text-white transition-all z-20">
+        <button onClick={prev} aria-label="Previous Slide" className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-red-500 hover:text-white transition-all z-20">
           <ChevronLeft size={18} className="text-neutral-800 hover:text-white" />
         </button>
-        <button onClick={next} className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-red-500 hover:text-white transition-all z-20">
+        <button onClick={next} aria-label="Next Slide" className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-red-500 hover:text-white transition-all z-20">
           <ChevronRight size={18} className="text-neutral-800 hover:text-white" />
         </button>
 
         {/* Indicator Dots */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
           {slides.map((_, i) => (
-            <button key={i} onClick={() => setCur(i)}
+            <button key={i} onClick={() => setCur(i)} aria-label={`Go to slide ${i + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${i === cur ? 'bg-red-400 w-8' : 'bg-white/50 w-2'}`} />
           ))}
         </div>
@@ -213,7 +213,7 @@ function QuickCategories() {
 
         {/* Scrollable list */}
         <div className="relative z-10 mask-edges mt-4">
-          <button onClick={() => scroll('left')} 
+          <button onClick={() => scroll('left')} aria-label="Scroll left"
             className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-neutral-900/80 border border-red-400 text-red-300 transition-all hover:bg-red-500 hover:text-neutral-900 hidden md:flex">
             <ChevronLeft size={24} />
           </button>
@@ -223,14 +223,14 @@ function QuickCategories() {
               <button key={`${cat.label}-${idx}`} onClick={() => navigate('/category', { state: { category: cat.label } })}
                 className="snap-center flex-shrink-0 flex flex-col items-center gap-3 group focus:outline-none w-24 sm:w-32 md:w-44 cursor-pointer">
                 <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 rounded-2xl md:rounded-3xl border-2 border-red-400/40 bg-[#020617] overflow-hidden shadow-lg group-hover:border-red-400 group-hover:scale-105 transition-all duration-300 relative">
-                  <img src={cat.img} alt={cat.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <MediaDisplay src={cat.img} alt={cat.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-xs md:text-sm font-bold text-red-100 text-center leading-tight group-hover:text-red-400 transition-colors">{cat.label}</span>
               </button>
             ))}
           </AutoScrollWrapper>
 
-          <button onClick={() => scroll('right')} 
+          <button onClick={() => scroll('right')} aria-label="Scroll right"
             className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-neutral-900/80 border border-red-400 text-red-300 transition-all hover:bg-red-500 hover:text-neutral-900 hidden md:flex">
             <ChevronRight size={24} />
           </button>
@@ -261,7 +261,7 @@ function CategorySectionsGrid() {
       <Link to={`/product/${p.id}`} className="relative overflow-hidden block h-28 md:h-36 bg-red-50/50">
         <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         <div className="absolute top-2 left-2 bg-[#dc2626] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow">{p.tag || 'PURE'}</div>
-        <button onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWishlist(p); }}
+        <button aria-label={isWishlisted(p.id) ? "Remove from wishlist" : "Add to wishlist"} onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWishlist(p); }}
           className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm hover:scale-110 transition-transform">
           <Heart size={12} className={isWishlisted(p.id) ? 'fill-red-500 text-red-500' : 'text-neutral-400'} />
         </button>
@@ -469,7 +469,7 @@ function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <div className="w-11 h-11 rounded-full border-2 border-red-400 bg-red-50 p-0.5 overflow-hidden">
-                <img src="/logo.png" alt="Katariya Auto Parts" className="w-full h-full object-contain" />
+                <img src="/logo.webp" alt="Katariya Auto Parts" className="w-full h-full object-contain" />
               </div>
               <div>
                 <p className="font-cinzel font-bold text-lg text-red-100">katariya auto parts</p>

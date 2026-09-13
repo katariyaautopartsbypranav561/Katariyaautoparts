@@ -45,7 +45,7 @@ export default function AdminLayout() {
       <aside className={`fixed inset-y-0 left-0 w-64 bg-neutral-900 text-red-50 border-r border-red-900/40 shadow-xl transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-50 flex flex-col`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-red-900/30 shrink-0">
           <Link to="/admin" className="font-cinzel font-bold text-lg text-red-400 flex items-center gap-2">
-            <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-full bg-white p-0.5 object-contain" />
+            <img src="/logo.webp" alt="Logo" className="w-8 h-8 rounded-full bg-white p-0.5 object-contain" />
             Katariya Auto Parts
           </Link>
           <button className="md:hidden p-2 text-red-200" onClick={toggleSidebar}>

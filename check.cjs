@@ -4,7 +4,7 @@ const https = require('https');
 function getUrls(file) {
   if (!fs.existsSync(file)) return [];
   const content = fs.readFileSync(file, 'utf8');
-  const matches = content.match(/https:\/\/images\.unsplash\.com\/[^'\"\s]+/g) || [];
+  const matches = content.match(/https:\/\/images\.unsplash\.com\/[^'"\s]+/g) || [];
   return [...new Set(matches)];
 }
 

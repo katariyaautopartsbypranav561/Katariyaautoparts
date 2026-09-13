@@ -110,7 +110,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                 className="w-56 h-56 md:w-80 md:h-80 flex items-center justify-center drop-shadow-[0_0_35px_rgba(245,158,11,0.6)]"
               >
                 <div className="relative w-48 h-48 md:w-72 md:h-72 flex items-center justify-center p-4 bg-white rounded-full border-4 border-red-400 shadow-2xl">
-                  <img src="/logo.png" alt="Katariya Auto Parts Logo" className="w-full h-full object-contain relative z-10" />
+                  <img src="/logo.webp" alt="Katariya Auto Parts Logo" className="w-full h-full object-contain relative z-10" />
                 </div>
               </motion.div>
             </motion.div>

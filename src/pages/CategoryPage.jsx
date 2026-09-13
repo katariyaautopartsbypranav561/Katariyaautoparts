@@ -211,23 +211,23 @@ export default function CategoryPage() {
                   <div className="flex items-center justify-between mb-4 bg-white/90 backdrop-blur-md rounded-xl border border-red-200 shadow-sm px-4 py-2.5">
                     <p className="text-neutral-600 text-xs md:text-sm font-bold">{filteredProducts.length} <span className="hidden sm:inline">Products Available</span></p>
                     <div className="flex items-center gap-2">
-                      <select value={activePrice} onChange={e => setActivePrice(e.target.value)}
+                      <select aria-label="Filter by Price" value={activePrice} onChange={e => setActivePrice(e.target.value)}
                         className="lg:hidden text-xs font-bold text-neutral-700 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1 outline-none">
                         {['All', 'Under ₹500', '₹500 - ₹1000', '₹1000 - ₹2000', 'Above ₹2000'].map(p => (
                           <option key={p} value={p}>{p === 'All' ? 'Price: All' : p}</option>
                         ))}
                       </select>
-                      <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+                      <select aria-label="Sort by" value={sortBy} onChange={e => setSortBy(e.target.value)}
                         className="text-xs font-bold text-neutral-700 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1 outline-none">
                         {['Popular', 'Price: Low to High', 'Price: High to Low', 'Rating'].map(o => (
                           <option key={o}>{o}</option>
                       ))}
                     </select>
                     <div className="hidden md:flex items-center gap-1 border border-red-200 rounded-lg overflow-hidden bg-red-50">
-                      <button onClick={() => setViewMode('grid')} className={`p-1.5 ${viewMode === 'grid' ? 'bg-[#171717] text-red-200' : 'text-neutral-600'}`}>
+                      <button aria-label="Grid View" onClick={() => setViewMode('grid')} className={`p-1.5 ${viewMode === 'grid' ? 'bg-[#171717] text-red-200' : 'text-neutral-600'}`}>
                         <LayoutGrid size={15} />
                       </button>
-                      <button onClick={() => setViewMode('list')} className={`p-1.5 ${viewMode === 'list' ? 'bg-[#171717] text-red-200' : 'text-neutral-600'}`}>
+                      <button aria-label="List View" onClick={() => setViewMode('list')} className={`p-1.5 ${viewMode === 'list' ? 'bg-[#171717] text-red-200' : 'text-neutral-600'}`}>
                         <List size={15} />
                       </button>
                     </div>
@@ -256,7 +256,7 @@ export default function CategoryPage() {
                         <div className="relative bg-red-50/50 overflow-hidden flex-shrink-0" style={{ height: 160 }}>
                           <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                           <div className="absolute top-2 left-2 bg-[#dc2626] text-white text-[9px] font-bold px-2 py-0.5 rounded-md">{p.tag || 'Genuine'}</div>
-                          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(p); }} className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm hover:scale-110 transition-transform">
+                          <button aria-label={isWishlisted(p.id) ? "Remove from wishlist" : "Add to wishlist"} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(p); }} className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm hover:scale-110 transition-transform">
                             <Heart size={13} className={isWishlisted(p.id) ? 'fill-red-500 text-red-500' : 'text-neutral-400'} />
                           </button>
                         </div>

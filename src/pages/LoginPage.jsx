@@ -45,7 +45,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md relative z-10">
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden border-2 border-red-400/40 p-2 shadow-2xl">
-              <img src="/logo.png" alt="Katariya Auto Parts Logo" className="w-full h-full object-contain" />
+              <img src="/logo.webp" alt="Katariya Auto Parts Logo" className="w-full h-full object-contain" />
             </div>
             <h1 className="font-cinzel font-bold text-3xl text-red-100">
               Welcome to Katariya Auto Parts

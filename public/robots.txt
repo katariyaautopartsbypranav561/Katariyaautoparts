@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://katariya-auto-parts.vercel.app/sitemap.xml
