@@ -359,3 +359,11 @@ section.in-view h3 {
   }
 }
 
+
+/* Prevent iOS Safari auto-zoom on input focus */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
