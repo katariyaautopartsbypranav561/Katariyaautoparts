@@ -490,7 +490,6 @@ function Footer() {
               <button onClick={() => navigate('/offers')} className="hover:text-red-400 text-left">Festive Deals & Offers</button>
               <button onClick={() => navigate('/hub')} className="hover:text-red-400 text-left">Garage & Maintenance Hub</button>
               <button onClick={() => navigate('/account')} className="hover:text-red-400 text-left">My Account</button>
-              <button onClick={() => navigate('/admin')} className="text-red-400 hover:text-white text-left font-bold mt-1">Admin Panel ⚙️</button>
             </div>
           </div>
 

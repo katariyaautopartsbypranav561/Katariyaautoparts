@@ -135,11 +135,6 @@ export default function AccountPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {isAdmin && (
-                    <button onClick={() => navigate('/admin')} className="bg-red-400 text-neutral-950 text-xs font-bold px-4 py-2.5 rounded-xl shadow hover:bg-red-300 transition-all">
-                      ⚙️ Admin Portal
-                    </button>
-                  )}
                   <button onClick={() => logout()} className="bg-neutral-950/40 border border-red-300/40 text-red-100 text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-neutral-950 transition-all flex items-center gap-1.5">
                     <LogOut size={14} /> Sign Out
                   </button>
