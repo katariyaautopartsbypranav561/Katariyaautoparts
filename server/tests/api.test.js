@@ -10,7 +10,13 @@ const crypto = require('crypto');
 
 // Mock external services
 jest.mock('../firebaseAdmin', () => require('./__mocks__/firebaseAdmin'));
-jest.mock('razorpay', () => require('./__mocks__/razorpay'));
+jest.mock('razorpay', () => {
+  return jest.fn().mockImplementation(() => ({
+    orders: {
+      create: jest.fn().mockResolvedValue({ id: 'dummy_order_123', amount: 10000, currency: 'INR' })
+    }
+  }));
+});
 jest.mock('cloudinary', () => ({
   v2: {
     config: jest.fn(),
