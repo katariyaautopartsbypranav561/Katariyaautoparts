@@ -23,7 +23,8 @@
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.0",
     "recharts": "^3.10.1",
-    "ua-parser-js": "^2.0.10"
+    "ua-parser-js": "^2.0.10",
+    "varlock": "^1.19.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.1",

@@ -28,3 +28,5 @@ dist-ssr
 deploy_key*
 push_env.js
 lighthouse-report.*
+
+!.env.schema

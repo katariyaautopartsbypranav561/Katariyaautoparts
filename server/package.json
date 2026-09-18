@@ -21,7 +21,8 @@
     "nodemailer": "^10.0.0",
     "prisma": "^5.22.0",
     "razorpay": "^2.9.8",
-    "ua-parser-js": "^2.0.10"
+    "ua-parser-js": "^2.0.10",
+    "varlock": "^1.19.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

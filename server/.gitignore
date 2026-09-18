@@ -5,3 +5,5 @@ node_modules
 *.db
 
 /generated/prisma
+
+!.env.schema
